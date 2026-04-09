@@ -1,0 +1,1236 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Runway — Lance ton projet</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+  <style>
+    /* ===== RESET & BASE ===== */
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'DM Sans', sans-serif;
+      min-height: 100vh;
+      background: #0a0a0f;
+      color: #e4e4e7;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ===== BACKGROUND ===== */
+    .bg-glow {
+      position: fixed; inset: 0; z-index: 0; pointer-events: none;
+      overflow: hidden;
+    }
+    .bg-glow::before {
+      content: '';
+      position: absolute;
+      width: 600px; height: 600px;
+      top: -10%; left: -10%;
+      background: radial-gradient(circle, rgba(99,102,241,.15) 0%, transparent 70%);
+      animation: floatGlow 20s ease-in-out infinite;
+    }
+    .bg-glow::after {
+      content: '';
+      position: absolute;
+      width: 500px; height: 500px;
+      bottom: -10%; right: -10%;
+      background: radial-gradient(circle, rgba(168,85,247,.12) 0%, transparent 70%);
+      animation: floatGlow 25s ease-in-out infinite reverse;
+    }
+    @keyframes floatGlow {
+      0%, 100% { transform: translate(0, 0) scale(1); }
+      33% { transform: translate(60px, -40px) scale(1.1); }
+      66% { transform: translate(-30px, 50px) scale(0.95); }
+    }
+
+    /* ===== LAYOUT ===== */
+    .container {
+      position: relative; z-index: 1;
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 40px 20px 80px;
+    }
+
+    /* ===== SCREEN TRANSITIONS ===== */
+    .screen { display: none; animation: fadeUp .5s ease both; }
+    .screen.active { display: block; }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ===== SCREEN 1 — PROJECT CHOICE ===== */
+    .screen-title {
+      font-size: 2rem; font-weight: 600;
+      text-align: center;
+      margin-bottom: 8px;
+      background: linear-gradient(135deg, #c7d2fe, #a78bfa);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .screen-subtitle {
+      text-align: center;
+      color: #71717a;
+      margin-bottom: 48px;
+      font-size: .95rem;
+    }
+
+    .group-label {
+      font-size: .8rem;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      color: #71717a;
+      margin-bottom: 12px;
+    }
+    .card-group {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      margin-bottom: 36px;
+    }
+    .card-group.three-cols {
+      grid-template-columns: 1fr 1fr 1fr;
+    }
+
+    .choice-card {
+      position: relative;
+      padding: 28px 20px;
+      border-radius: 16px;
+      border: 1px solid rgba(255,255,255,.06);
+      background: rgba(255,255,255,.03);
+      backdrop-filter: blur(12px);
+      cursor: pointer;
+      text-align: center;
+      transition: all .3s ease;
+      user-select: none;
+    }
+    .choice-card:hover {
+      border-color: rgba(167,139,250,.25);
+      background: rgba(167,139,250,.06);
+      transform: translateY(-2px);
+    }
+    .choice-card.selected {
+      border-color: rgba(167,139,250,.5);
+      background: rgba(167,139,250,.1);
+      box-shadow: 0 0 30px rgba(167,139,250,.1);
+    }
+    .choice-card.selected::after {
+      content: '';
+      position: absolute; top: 10px; right: 10px;
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: #a78bfa;
+      box-shadow: 0 0 8px rgba(167,139,250,.6);
+    }
+    .choice-card .icon-wrap {
+      width: 48px; height: 48px;
+      margin: 0 auto 14px;
+      border-radius: 12px;
+      background: rgba(255,255,255,.05);
+      display: flex; align-items: center; justify-content: center;
+      transition: background .3s;
+    }
+    .choice-card.selected .icon-wrap {
+      background: rgba(167,139,250,.15);
+    }
+    .choice-card .icon-wrap i { width: 22px; height: 22px; color: #a78bfa; }
+    .choice-card .card-label {
+      font-size: .9rem; font-weight: 500; color: #d4d4d8;
+    }
+
+    /* Conditional group (site scope) */
+    .group-conditional {
+      max-height: 0;
+      overflow: hidden;
+      opacity: 0;
+      transition: max-height .4s ease, opacity .3s ease, margin .3s ease;
+      margin-bottom: 0;
+    }
+    .group-conditional.visible {
+      max-height: 250px;
+      opacity: 1;
+      margin-bottom: 36px;
+    }
+    .group-conditional .card-group {
+      margin-bottom: 0;
+    }
+    .choice-card .card-examples {
+      font-size: .72rem;
+      color: #71717a;
+      margin-top: 6px;
+      line-height: 1.4;
+    }
+
+    /* CTA button */
+    .cta-wrap {
+      text-align: center;
+      margin-top: 20px;
+      opacity: 0;
+      transform: translateY(12px);
+      pointer-events: none;
+      transition: all .4s ease;
+    }
+    .cta-wrap.visible {
+      opacity: 1; transform: translateY(0); pointer-events: all;
+    }
+    .btn-primary {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 14px 32px;
+      border: none; border-radius: 12px;
+      font-family: inherit; font-size: .95rem; font-weight: 600;
+      color: #fff;
+      background: linear-gradient(135deg, #7c3aed, #6366f1);
+      cursor: pointer;
+      transition: all .3s ease;
+      box-shadow: 0 4px 24px rgba(99,102,241,.3);
+    }
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 32px rgba(99,102,241,.4);
+    }
+    .btn-primary i { width: 18px; height: 18px; }
+
+    /* ===== SCREEN 2 — CHECKLIST ===== */
+
+    /* Back button */
+    .back-btn {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: none; border: none;
+      color: #71717a; font-family: inherit; font-size: .85rem;
+      cursor: pointer;
+      transition: color .2s;
+    }
+    .back-btn:hover { color: #a78bfa; }
+    .back-btn i { width: 16px; height: 16px; }
+
+    .screen2-topbar {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 28px;
+    }
+    .reset-btn {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: none; border: 1px solid rgba(239,68,68,.15);
+      border-radius: 8px; padding: 6px 14px;
+      color: #71717a; font-family: inherit; font-size: .78rem;
+      cursor: pointer; transition: all .2s;
+    }
+    .reset-btn:hover {
+      color: #ef4444; border-color: rgba(239,68,68,.35);
+      background: rgba(239,68,68,.06);
+    }
+    .reset-btn i { width: 14px; height: 14px; }
+
+    /* Progress bar */
+    .progress-section { margin-bottom: 40px; }
+    .progress-header {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 8px;
+    }
+    .progress-fraction { font-size: .85rem; font-weight: 600; color: #a78bfa; }
+    .progress-status { font-size: .85rem; color: #71717a; transition: color .3s; }
+    .progress-track {
+      width: 100%; height: 8px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.06);
+      overflow: hidden;
+      position: relative;
+    }
+    .progress-fill {
+      height: 100%; border-radius: 999px;
+      background: linear-gradient(90deg, #7c3aed, #6366f1, #818cf8);
+      transition: width .6s cubic-bezier(.4,0,.2,1);
+      width: 0%;
+    }
+    .progress-milestones {
+      display: flex; justify-content: space-between;
+      margin-top: 10px;
+    }
+    .milestone {
+      font-size: .72rem; font-weight: 500;
+      color: rgba(255,255,255,.15);
+      transition: color .4s;
+    }
+    .milestone.reached { color: #a78bfa; }
+
+    /* Steps */
+    .step-list { display: flex; flex-direction: column; gap: 10px; }
+
+    .step-item {
+      display: flex; align-items: center; gap: 16px;
+      padding: 18px 20px;
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,.05);
+      background: rgba(255,255,255,.02);
+      backdrop-filter: blur(8px);
+      transition: all .35s ease;
+      cursor: default;
+      position: relative;
+    }
+    .step-item.active {
+      border-color: rgba(167,139,250,.2);
+      background: rgba(167,139,250,.04);
+      cursor: pointer;
+    }
+    .step-item.active:hover {
+      border-color: rgba(167,139,250,.35);
+      background: rgba(167,139,250,.08);
+      transform: translateX(4px);
+    }
+    .step-item.locked { opacity: .35; }
+    .step-item.completed {
+      opacity: .55;
+      cursor: pointer;
+    }
+    .step-item.completed:hover {
+      opacity: .7;
+      background: rgba(255,255,255,.03);
+    }
+    .step-item.completed .step-title { text-decoration: line-through; }
+
+    .step-icon {
+      flex-shrink: 0;
+      width: 40px; height: 40px;
+      border-radius: 10px;
+      background: rgba(255,255,255,.05);
+      display: flex; align-items: center; justify-content: center;
+      transition: background .3s;
+    }
+    .step-item.active .step-icon { background: rgba(167,139,250,.12); }
+    .step-item.completed .step-icon { background: rgba(34,197,94,.1); }
+    .step-icon i { width: 18px; height: 18px; color: #a78bfa; }
+    .step-item.completed .step-icon i { color: #22c55e; }
+
+    .step-content { flex: 1; min-width: 0; }
+    .step-title { font-size: .9rem; font-weight: 500; }
+    .step-badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 6px;
+      font-size: .65rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: .04em;
+      margin-left: 8px;
+    }
+    .badge-optional {
+      background: rgba(255,255,255,.06);
+      color: #71717a;
+    }
+    .step-chevron {
+      flex-shrink: 0;
+      opacity: 0;
+      transition: opacity .2s;
+    }
+    .step-item.active .step-chevron,
+    .step-item.completed .step-chevron { opacity: .5; }
+    .step-item.active:hover .step-chevron,
+    .step-item.completed:hover .step-chevron { opacity: 1; }
+    .step-chevron i { width: 16px; height: 16px; color: #a78bfa; }
+
+    /* Quick-check circle */
+    .step-check {
+      flex-shrink: 0;
+      width: 26px; height: 26px;
+      border-radius: 50%;
+      border: 2px solid rgba(255,255,255,.12);
+      background: none;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: all .25s ease;
+      padding: 0;
+    }
+    .step-check:hover {
+      border-color: #22c55e;
+      background: rgba(34,197,94,.1);
+    }
+    .step-check i { width: 14px; height: 14px; color: transparent; transition: color .2s; }
+    .step-check:hover i { color: #22c55e; }
+    .step-item.completed .step-check {
+      border-color: #22c55e;
+      background: #22c55e;
+      pointer-events: none;
+    }
+    .step-item.completed .step-check i { color: #fff; }
+    .step-item.locked .step-check {
+      opacity: .3;
+      pointer-events: none;
+    }
+
+    /* Optional step activate button */
+    .opt-activate {
+      display: inline-flex; align-items: center; gap: 4px;
+      margin-top: 6px;
+      background: none; border: 1px solid rgba(167,139,250,.2);
+      border-radius: 8px;
+      padding: 4px 12px;
+      font-family: inherit; font-size: .75rem; font-weight: 500;
+      color: #a78bfa; cursor: pointer;
+      transition: all .2s;
+    }
+    .opt-activate:hover {
+      background: rgba(167,139,250,.08);
+      border-color: rgba(167,139,250,.4);
+    }
+    .opt-activate i { width: 14px; height: 14px; }
+
+    /* Completion message */
+    .completion-msg {
+      display: none;
+      text-align: center;
+      padding: 40px 20px;
+      margin-top: 32px;
+      border-radius: 16px;
+      border: 1px solid rgba(34,197,94,.15);
+      background: rgba(34,197,94,.04);
+      animation: fadeUp .5s ease both;
+    }
+    .completion-msg.visible { display: block; }
+    .completion-msg h2 {
+      font-size: 1.3rem; font-weight: 600;
+      color: #22c55e; margin-bottom: 8px;
+    }
+    .completion-msg p { color: #71717a; font-size: .9rem; line-height: 1.5; }
+
+    /* ===== DRAWER ===== */
+    .drawer-overlay {
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,.5);
+      backdrop-filter: blur(4px);
+      z-index: 100;
+      opacity: 0; pointer-events: none;
+      transition: opacity .3s ease;
+    }
+    .drawer-overlay.open { opacity: 1; pointer-events: all; }
+
+    .drawer {
+      position: fixed;
+      top: 0; right: 0;
+      width: min(480px, 92vw);
+      height: 100%;
+      background: #111118;
+      border-left: 1px solid rgba(255,255,255,.06);
+      z-index: 101;
+      transform: translateX(100%);
+      transition: transform .35s cubic-bezier(.4,0,.2,1);
+      display: flex; flex-direction: column;
+      overflow: hidden;
+    }
+    .drawer.open { transform: translateX(0); }
+
+    .drawer-header {
+      display: flex; align-items: center; gap: 14px;
+      padding: 24px 24px 0;
+    }
+    .drawer-header .step-icon {
+      width: 44px; height: 44px;
+    }
+    .drawer-header h2 {
+      font-size: 1.05rem; font-weight: 600; color: #e4e4e7;
+    }
+    .drawer-close {
+      position: absolute; top: 20px; right: 20px;
+      background: rgba(255,255,255,.05);
+      border: none; border-radius: 8px;
+      width: 32px; height: 32px;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; color: #71717a;
+      transition: all .2s;
+    }
+    .drawer-close:hover { background: rgba(255,255,255,.1); color: #e4e4e7; }
+    .drawer-close i { width: 16px; height: 16px; }
+
+    .drawer-body {
+      flex: 1; overflow-y: auto;
+      padding: 28px 24px;
+    }
+    .drawer-body h3 {
+      font-size: .8rem; font-weight: 600;
+      text-transform: uppercase; letter-spacing: .06em;
+      color: #a78bfa;
+      margin-bottom: 8px; margin-top: 24px;
+    }
+    .drawer-body h3:first-child { margin-top: 0; }
+    .drawer-body p {
+      font-size: .88rem; line-height: 1.65; color: #a1a1aa;
+      margin-bottom: 6px;
+    }
+    .drawer-body code {
+      display: block;
+      background: rgba(255,255,255,.04);
+      border: 1px solid rgba(255,255,255,.06);
+      border-radius: 8px;
+      padding: 12px 16px;
+      font-family: 'DM Sans', monospace;
+      font-size: .82rem;
+      color: #c7d2fe;
+      margin: 10px 0 14px;
+      white-space: pre-wrap;
+      line-height: 1.7;
+    }
+
+    /* Contextual tip callout */
+    .tip {
+      margin: 14px 0;
+      padding: 14px 16px;
+      border-radius: 10px;
+      border-left: 3px solid #a78bfa;
+      background: rgba(167,139,250,.06);
+      font-size: .84rem;
+      line-height: 1.6;
+      color: #c4b5fd;
+    }
+    .tip strong { color: #e4e4e7; font-weight: 600; }
+
+    .drawer-footer {
+      padding: 20px 24px;
+      border-top: 1px solid rgba(255,255,255,.05);
+    }
+    .btn-complete {
+      width: 100%;
+      padding: 14px;
+      border: none; border-radius: 12px;
+      font-family: inherit; font-size: .9rem; font-weight: 600;
+      color: #fff;
+      background: linear-gradient(135deg, #22c55e, #16a34a);
+      cursor: pointer;
+      transition: all .3s;
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+      box-shadow: 0 4px 20px rgba(34,197,94,.25);
+    }
+    .btn-complete:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 28px rgba(34,197,94,.35);
+    }
+    .btn-complete i { width: 18px; height: 18px; }
+
+    /* ===== CONFIRM MODAL ===== */
+    .modal-overlay {
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,.6);
+      backdrop-filter: blur(4px);
+      z-index: 200;
+      display: none; align-items: center; justify-content: center;
+    }
+    .modal-overlay.open { display: flex; }
+    .modal {
+      background: #16161d;
+      border: 1px solid rgba(255,255,255,.08);
+      border-radius: 16px;
+      padding: 28px;
+      max-width: 380px; width: 90%;
+      text-align: center;
+      animation: fadeUp .3s ease;
+    }
+    .modal h3 { font-size: 1rem; font-weight: 600; margin-bottom: 8px; color: #e4e4e7; }
+    .modal p { font-size: .85rem; color: #71717a; margin-bottom: 24px; line-height: 1.5; }
+    .modal-actions { display: flex; gap: 10px; }
+    .modal-actions button {
+      flex: 1; padding: 10px;
+      border-radius: 10px; border: none;
+      font-family: inherit; font-size: .85rem; font-weight: 500;
+      cursor: pointer; transition: all .2s;
+    }
+    .btn-cancel {
+      background: rgba(255,255,255,.06); color: #a1a1aa;
+    }
+    .btn-cancel:hover { background: rgba(255,255,255,.1); }
+    .btn-confirm {
+      background: rgba(239,68,68,.15); color: #ef4444;
+    }
+    .btn-confirm:hover { background: rgba(239,68,68,.25); }
+
+    /* ===== RESPONSIVE ===== */
+    @media (max-width: 520px) {
+      .container { padding: 28px 16px 60px; }
+      .screen-title { font-size: 1.5rem; }
+      .card-group { gap: 10px; }
+      .card-group.three-cols { grid-template-columns: 1fr 1fr 1fr; }
+      .choice-card { padding: 18px 10px; }
+      .choice-card .card-label { font-size: .8rem; }
+      .choice-card .card-examples { font-size: .65rem; }
+      .step-item { padding: 14px 16px; gap: 12px; }
+      .drawer { width: 100vw; }
+      .drawer-body { padding: 24px 20px; }
+    }
+    @media (max-width: 380px) {
+      .card-group.three-cols { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="bg-glow"></div>
+
+<div class="container">
+
+  <!-- ==================== SCREEN 1 ==================== -->
+  <div id="screen1" class="screen active">
+    <h1 class="screen-title">Runway</h1>
+    <p class="screen-subtitle">Quelles sont les étapes pour construire mon app ou mon site ?</p>
+
+    <p class="group-label">Que souhaites-tu créer ?</p>
+    <div class="card-group" id="groupType">
+      <div class="choice-card" data-group="type" data-value="site" tabindex="0">
+        <div class="icon-wrap"><i data-lucide="globe"></i></div>
+        <div class="card-label">Un site web</div>
+      </div>
+      <div class="choice-card" data-group="type" data-value="app" tabindex="0">
+        <div class="icon-wrap"><i data-lucide="layout-dashboard"></i></div>
+        <div class="card-label">Une application</div>
+      </div>
+    </div>
+
+    <div class="group-conditional" id="groupDeviceWrap">
+      <p class="group-label">Sur quel appareil ?</p>
+      <div class="card-group three-cols" id="groupDevice">
+        <div class="choice-card" data-group="device" data-value="desktop" tabindex="0">
+          <div class="icon-wrap"><i data-lucide="monitor"></i></div>
+          <div class="card-label">Ordinateur</div>
+        </div>
+        <div class="choice-card" data-group="device" data-value="mobile" tabindex="0">
+          <div class="icon-wrap"><i data-lucide="smartphone"></i></div>
+          <div class="card-label">Mobile</div>
+        </div>
+        <div class="choice-card" data-group="device" data-value="both" tabindex="0">
+          <div class="icon-wrap"><i data-lucide="tablet-smartphone"></i></div>
+          <div class="card-label">Les deux</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="group-conditional" id="groupAudienceWrap">
+      <p class="group-label">Pour qui ?</p>
+      <div class="card-group" id="groupAudience">
+        <div class="choice-card" data-group="audience" data-value="solo" tabindex="0">
+          <div class="icon-wrap"><i data-lucide="user"></i></div>
+          <div class="card-label">Pour moi seul</div>
+        </div>
+        <div class="choice-card" data-group="audience" data-value="multi" tabindex="0">
+          <div class="icon-wrap"><i data-lucide="users"></i></div>
+          <div class="card-label">Pour plusieurs personnes</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="group-conditional" id="groupScopeWrap">
+      <p class="group-label">Quel type de site ?</p>
+      <div class="card-group" id="groupScope">
+        <div class="choice-card" data-group="scope" data-value="vitrine" tabindex="0">
+          <div class="icon-wrap"><i data-lucide="file-text"></i></div>
+          <div class="card-label">Une page vitrine</div>
+          <div class="card-examples">Portfolio, CV, landing page…</div>
+        </div>
+        <div class="choice-card" data-group="scope" data-value="complet" tabindex="0">
+          <div class="icon-wrap"><i data-lucide="layers"></i></div>
+          <div class="card-label">Un site complet</div>
+          <div class="card-examples">Blog, site multi-pages, espace membre…</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="cta-wrap" id="ctaWrap">
+      <button class="btn-primary" id="btnStart">
+        Voir mon parcours <i data-lucide="arrow-right"></i>
+      </button>
+    </div>
+  </div>
+
+  <!-- ==================== SCREEN 2 ==================== -->
+  <div id="screen2" class="screen">
+    <div class="screen2-topbar">
+      <button class="back-btn" id="btnBack">
+        <i data-lucide="arrow-left"></i> Revenir au choix
+      </button>
+      <button class="reset-btn" id="btnReset">
+        <i data-lucide="rotate-ccw"></i> Recommencer
+      </button>
+    </div>
+
+    <!-- Progress -->
+    <div class="progress-section">
+      <div class="progress-header">
+        <span class="progress-fraction" id="progressFraction">0 / 5</span>
+        <span class="progress-status" id="progressStatus">Pret au decollage</span>
+      </div>
+      <div class="progress-track">
+        <div class="progress-fill" id="progressFill"></div>
+      </div>
+      <div class="progress-milestones">
+        <span class="milestone" id="ms0">Départ</span>
+        <span class="milestone" id="ms1">À mi-chemin</span>
+        <span class="milestone" id="ms2">En ligne !</span>
+      </div>
+    </div>
+
+    <!-- Steps -->
+    <div class="step-list" id="stepList"></div>
+
+    <!-- Completion -->
+    <div class="completion-msg" id="completionMsg">
+      <h2>C'est en ligne !</h2>
+      <p>Partage le lien. Pour chaque modification, répète la dernière étape.</p>
+    </div>
+  </div>
+
+</div>
+
+<!-- ==================== DRAWER ==================== -->
+<div class="drawer-overlay" id="drawerOverlay"></div>
+<div class="drawer" id="drawer">
+  <div class="drawer-header">
+    <div class="step-icon" id="drawerIcon"></div>
+    <h2 id="drawerTitle"></h2>
+  </div>
+  <button class="drawer-close" id="drawerClose"><i data-lucide="x"></i></button>
+  <div class="drawer-body" id="drawerBody"></div>
+  <div class="drawer-footer">
+    <button class="btn-complete" id="btnMarkDone">
+      <i data-lucide="check"></i> Marquer comme fait
+    </button>
+  </div>
+</div>
+
+<!-- ==================== CONFIRM MODAL ==================== -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal">
+    <h3>Revenir en arrière ?</h3>
+    <p>Tu as déjà commencé des étapes. Si tu reviens, ta progression sera conservée mais tu pourras changer tes choix.</p>
+    <div class="modal-actions">
+      <button class="btn-cancel" id="modalCancel">Annuler</button>
+      <button class="btn-confirm" id="modalConfirm">Revenir</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ===== DATA =====
+// Content functions receive { type, audience } and return HTML
+const STEPS_DATA = [
+  {
+    id: 'describe',
+    icon: 'pencil',
+    title: 'Décris ton projet à Claude',
+    optional: false,
+    content(s) {
+      const isApp = s.type === 'app';
+      const isMulti = s.audience === 'multi';
+      const isVitrine = !isApp && s.scope === 'vitrine';
+      const isMobile = s.device === 'mobile';
+      const isBoth = s.device === 'both';
+      const isDesktop = s.device === 'desktop';
+
+      // Device suffix for example prompts
+      const deviceHint = isBoth ? 'Adapté ordinateur et mobile.'
+        : isMobile ? 'Pensé pour mobile en priorité.'
+        : 'Pensé pour ordinateur.';
+
+      let examplePrompt;
+      if (isApp && isMulti) {
+        examplePrompt = `"Crée une app de gestion de tâches en équipe. Chaque personne a un compte, un tableau de bord personnel et peut créer des tâches. Design épuré, mode sombre. ${deviceHint}"`;
+      } else if (isApp) {
+        examplePrompt = `"Crée une app de suivi de dépenses perso avec un tableau de bord, des graphiques par catégorie et un bouton pour ajouter une dépense. Design simple. ${deviceHint}"`;
+      } else if (isVitrine) {
+        examplePrompt = `"Crée une page portfolio avec mon nom, une courte bio, une grille de projets avec images, et un lien vers mon email. Design minimal et élégant. ${deviceHint} Une seule page HTML."`;
+      } else if (isMulti) {
+        examplePrompt = `"Crée un site pour mon association avec une page d'accueil, une page membres, un espace actualités et un formulaire de contact. Design chaleureux. ${deviceHint}"`;
+      } else {
+        examplePrompt = `"Crée un site personnel avec une page d'accueil, une page à propos et un formulaire de contact. Design sobre et moderne. ${deviceHint}"`;
+      }
+
+      // Device tip
+      let deviceTip = '';
+      if (isBoth) {
+        deviceTip = `<div class="tip"><strong>Astuce :</strong> Tu veux que ça marche sur ordinateur et téléphone. Précise "responsive" ou "adapté mobile et desktop" dans ta description. Claude créera une interface qui s'ajuste automatiquement à la taille de l'écran.</div>`;
+      } else if (isMobile) {
+        deviceTip = isApp
+          ? `<div class="tip"><strong>Astuce :</strong> Pour une app mobile, demande à Claude d'en faire une PWA (Progressive Web App). Tes utilisateurs pourront l'installer sur leur téléphone directement depuis le navigateur — comme une vraie app, sans passer par l'App Store. Ajoute dans ta description : "Fais-en une PWA installable."</div>`
+          : `<div class="tip"><strong>Astuce :</strong> Tu cibles le mobile en priorité. Précise "mobile-first" dans ta description pour que Claude construise l'interface en partant du petit écran. Le résultat sera optimisé pour le téléphone.</div>`;
+      } else if (isDesktop) {
+        deviceTip = `<div class="tip"><strong>Astuce :</strong> Tu cibles l'ordinateur. Tu peux demander une mise en page plus large avec des colonnes, un menu latéral, ou un tableau de bord — des éléments qui profitent d'un grand écran.</div>`;
+      }
+
+      // PWA tip (app + both or app + mobile)
+      const pwaTip = (isApp && (isBoth || isMobile))
+        ? (isMobile ? '' : `<div class="tip"><strong>Astuce :</strong> Demande à Claude d'en faire une PWA (Progressive Web App). Tes utilisateurs pourront installer l'app sur leur téléphone directement depuis le navigateur — pas besoin de passer par l'App Store. Ajoute : "Fais-en une PWA installable."</div>`)
+        : '';
+
+      const multiTip = isMulti
+        ? `<div class="tip"><strong>Astuce :</strong> Ton projet concerne plusieurs personnes. Précise dans ta description si chacun a un compte, un espace perso, ou des rôles différents (admin, membre…). Plus c'est clair, mieux Claude structurera le résultat.</div>`
+        : '';
+      return `
+        <h3>En résumé</h3>
+        <p>Claude Code génère du code à partir de ce que tu lui décris, en français. Pas besoin de savoir coder.</p>
+        <h3>Concrètement</h3>
+        <p>Ouvre Claude Code et explique ce que tu veux en 3 à 5 phrases : le type de projet, les fonctionnalités principales, le style visuel. Plus c'est précis, meilleur sera le résultat.</p>
+        ${deviceTip}
+        ${pwaTip}
+        ${multiTip}
+        <h3>Exemple</h3>
+        <code>${examplePrompt}</code>
+      `;
+    }
+  },
+  {
+    id: 'github',
+    icon: 'git-branch',
+    title: 'Crée un espace GitHub',
+    optional: false,
+    content(s) {
+      const isMulti = s.audience === 'multi';
+      const collabTip = isMulti
+        ? `<div class="tip"><strong>Astuce :</strong> Plus tard, tu pourras inviter d'autres personnes à contribuer au code depuis les paramètres de ton projet GitHub (Settings > Collaborators).</div>`
+        : '';
+      return `
+        <h3>En résumé</h3>
+        <p>GitHub, c'est l'endroit où ton code est sauvegardé en ligne. C'est aussi ce qui permettra de mettre ton projet en ligne à l'étape suivante.</p>
+        <h3>Concrètement</h3>
+        <p>Va sur github.com et crée un compte gratuit. Ensuite, clique sur "New repository" (= nouveau projet), donne-lui un nom, laisse-le en Public, et valide.</p>
+        <h3>Pourquoi c'est utile</h3>
+        <p>GitHub garde un historique de chaque modification. Si quelque chose casse, tu peux revenir en arrière.</p>
+        ${collabTip}
+      `;
+    }
+  },
+  {
+    id: 'connect',
+    icon: 'link',
+    title: 'Envoie le code sur GitHub',
+    optional: false,
+    content() {
+      return `
+        <h3>En résumé</h3>
+        <p>Le code que Claude a créé est sur ton ordinateur. Il faut maintenant l'envoyer sur GitHub pour pouvoir le mettre en ligne.</p>
+        <h3>Concrètement</h3>
+        <p>Tu peux simplement demander à Claude : "Envoie le code sur mon dépôt GitHub" en lui donnant l'adresse de ton projet. Il s'occupera des commandes.</p>
+        <h3>Si tu préfères le faire toi-même</h3>
+        <p>Ouvre un terminal dans le dossier de ton projet et tape :</p>
+        <code>git init
+git add .
+git commit -m "premier envoi"
+git remote add origin ADRESSE_DE_TON_PROJET
+git push -u origin main</code>
+        <p>L'adresse de ton projet se trouve sur la page GitHub que tu viens de créer.</p>
+      `;
+    }
+  },
+  {
+    id: 'deploy',
+    icon: 'zap',
+    title(s) {
+      if (s.type === 'app') return 'Mets en ligne avec Vercel';
+      return s.scope === 'vitrine' ? 'Mets en ligne avec GitHub Pages' : 'Mets en ligne avec Netlify';
+    },
+    optional: false,
+    content(s) {
+      if (s.type === 'app') {
+        return `
+          <h3>En résumé</h3>
+          <p>Vercel va lire ton code sur GitHub et le mettre en ligne automatiquement. À chaque future modification, la mise à jour se fera toute seule.</p>
+          <h3>Pourquoi Vercel</h3>
+          <p>Pour une application, Vercel gère bien les parties dynamiques (comptes, données en temps réel, etc.).</p>
+          <div class="tip"><strong>Astuce PWA :</strong> Si tu as demandé une PWA à l'étape 1, Vercel la servira automatiquement. Rien de plus à configurer.</div>
+          <h3>Concrètement</h3>
+          <p>Va sur vercel.com, connecte-toi avec ton compte GitHub, clique sur "Add New Project", choisis ton projet, puis clique sur "Deploy". C'est tout — ton app a maintenant une adresse web publique.</p>
+        `;
+      }
+      if (s.scope === 'vitrine') {
+        return `
+          <h3>En résumé</h3>
+          <p>GitHub Pages permet de mettre en ligne une page directement depuis ton projet GitHub. Pas besoin de créer de compte ailleurs — c'est gratuit et inclus dans GitHub.</p>
+          <h3>Pourquoi GitHub Pages</h3>
+          <p>Pour une page vitrine (portfolio, CV, landing page), c'est la solution la plus simple : pas de configuration, pas de service externe. Le site est en ligne en quelques clics.</p>
+          <h3>Concrètement</h3>
+          <p>Dans ton projet GitHub, va dans Settings > Pages. Sous "Source", choisis la branche <em>main</em> et le dossier <em>/ (root)</em>, puis clique sur "Save". Après quelques secondes, ton site sera accessible à l'adresse <em>ton-pseudo.github.io/nom-du-projet</em>.</p>
+          <div class="tip"><strong>Astuce :</strong> Vérifie que ton fichier principal s'appelle bien <em>index.html</em>. C'est la page que GitHub Pages affichera par défaut.</div>
+        `;
+      }
+      return `
+        <h3>En résumé</h3>
+        <p>Netlify va lire ton code sur GitHub et le mettre en ligne automatiquement. À chaque future modification, la mise à jour se fera toute seule.</p>
+        <h3>Pourquoi Netlify</h3>
+        <p>Pour un site avec plusieurs pages, un blog ou un espace membre, Netlify est le plus adapté : hébergement, sécurité (HTTPS), et même gestion des formulaires de contact — tout est inclus.</p>
+        <div class="tip"><strong>Astuce formulaire :</strong> Si ton site a un formulaire de contact, ajoute l'attribut <em>netlify</em> à ta balise &lt;form&gt; et les messages arriveront directement dans ton tableau de bord Netlify. Pas besoin de serveur.</div>
+        <h3>Concrètement</h3>
+        <p>Va sur netlify.com, connecte-toi avec ton compte GitHub, clique sur "Add new site" > "Import an existing project", choisis ton projet, puis clique sur "Deploy site". Ton site a maintenant une adresse web publique.</p>
+      `;
+    }
+  },
+  {
+    id: 'database',
+    icon: 'database',
+    title: 'Ajoute une base de données',
+    optional: true,
+    content(s) {
+      const isMulti = s.audience === 'multi';
+      const multiTip = isMulti
+        ? `<div class="tip"><strong>Astuce multi-utilisateurs :</strong> Supabase inclut un système de comptes (inscription, connexion, mot de passe oublié) prêt à l'emploi. Demande à Claude : "Ajoute l'authentification Supabase avec un espace perso par utilisateur." Il s'occupera de tout câbler.</div>`
+        : '';
+      return `
+        <h3>En résumé</h3>
+        <p>Une base de données sert à stocker des informations qui changent : comptes, messages, commandes, préférences… Si ton projet affiche toujours la même chose, tu n'en as pas besoin.</p>
+        <h3>Quand c'est nécessaire</h3>
+        <p>Dès que ton projet doit retenir quelque chose : des comptes utilisateurs, des données personnalisées, du contenu qui évolue.</p>
+        ${multiTip}
+        <h3>Comment faire</h3>
+        <p>Crée un compte gratuit sur supabase.com, puis crée un nouveau projet. Ensuite, demande à Claude : "Connecte mon projet à Supabase" en lui donnant les clés d'API (visibles dans les paramètres Supabase). Il fera le reste.</p>
+      `;
+    }
+  },
+  {
+    id: 'push',
+    icon: 'arrow-right',
+    title: 'Envoie tes modifications',
+    optional: false,
+    content(s) {
+      let platform, thing;
+      if (s.type === 'app') { platform = 'Vercel'; thing = 'ton application'; }
+      else if (s.scope === 'vitrine') { platform = 'GitHub Pages'; thing = 'ta page'; }
+      else { platform = 'Netlify'; thing = 'ton site'; }
+      return `
+        <h3>En résumé</h3>
+        <p>À chaque fois que tu modifies ton projet, il faut renvoyer le code sur GitHub. ${platform} détectera le changement et mettra ${thing} à jour automatiquement.</p>
+        <h3>Le plus simple</h3>
+        <p>Demande à Claude : "Envoie les modifications sur GitHub." Il exécutera les commandes pour toi.</p>
+        <h3>Si tu préfères le faire toi-même</h3>
+        <code>git add .
+git commit -m "ce que tu as changé"
+git push</code>
+        <p>Quelques secondes après, ${thing} en ligne est à jour.</p>
+      `;
+    }
+  }
+];
+
+const STATUS_LABELS = [
+  'Prêt au décollage',
+  "C'est parti !",
+  'Tu avances bien',
+  'À mi-chemin',
+  'Presque là',
+  'En ligne !'
+];
+
+// ===== STATE =====
+let state = {
+  type: null,       // 'site' | 'app'
+  device: null,     // 'desktop' | 'mobile' | 'both'
+  audience: null,   // 'solo' | 'multi'
+  scope: null,      // 'vitrine' | 'complet' (only when type === 'site')
+  completed: [],    // array of step ids
+  dbActive: false   // whether optional db step is activated
+};
+
+// ===== PERSISTENCE =====
+function saveState() {
+  localStorage.setItem('runway_state', JSON.stringify(state));
+}
+function loadState() {
+  const raw = localStorage.getItem('runway_state');
+  if (raw) {
+    try { Object.assign(state, JSON.parse(raw)); } catch(e) {}
+  }
+}
+
+// ===== DOM REFS =====
+const screen1 = document.getElementById('screen1');
+const screen2 = document.getElementById('screen2');
+const ctaWrap = document.getElementById('ctaWrap');
+const btnStart = document.getElementById('btnStart');
+const btnBack = document.getElementById('btnBack');
+const stepList = document.getElementById('stepList');
+const progressFraction = document.getElementById('progressFraction');
+const progressStatus = document.getElementById('progressStatus');
+const progressFill = document.getElementById('progressFill');
+const completionMsg = document.getElementById('completionMsg');
+const drawerOverlay = document.getElementById('drawerOverlay');
+const drawer = document.getElementById('drawer');
+const drawerIcon = document.getElementById('drawerIcon');
+const drawerTitle = document.getElementById('drawerTitle');
+const drawerBody = document.getElementById('drawerBody');
+const drawerClose = document.getElementById('drawerClose');
+const btnMarkDone = document.getElementById('btnMarkDone');
+const modalOverlay = document.getElementById('modalOverlay');
+const modalCancel = document.getElementById('modalCancel');
+const modalConfirm = document.getElementById('modalConfirm');
+const btnReset = document.getElementById('btnReset');
+const groupDeviceWrap = document.getElementById('groupDeviceWrap');
+const groupAudienceWrap = document.getElementById('groupAudienceWrap');
+const groupScopeWrap = document.getElementById('groupScopeWrap');
+
+let currentDrawerStepId = null;
+
+// ===== SCREEN 1 LOGIC =====
+function initScreen1() {
+  document.querySelectorAll('.choice-card').forEach(card => {
+    card.addEventListener('click', () => {
+      const group = card.dataset.group;
+      const value = card.dataset.value;
+      document.querySelectorAll(`[data-group="${group}"]`).forEach(c => c.classList.remove('selected'));
+      card.classList.add('selected');
+      state[group] = value;
+      // Reset scope when switching to app
+      if (group === 'type' && value === 'app') {
+        state.scope = null;
+        document.querySelectorAll('[data-group="scope"]').forEach(c => c.classList.remove('selected'));
+      }
+      saveState();
+      updateGroups();
+    });
+    card.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); card.click(); } });
+  });
+
+  // Restore selections
+  if (state.type) {
+    document.querySelector(`[data-group="type"][data-value="${state.type}"]`)?.classList.add('selected');
+  }
+  if (state.device) {
+    document.querySelector(`[data-group="device"][data-value="${state.device}"]`)?.classList.add('selected');
+  }
+  if (state.audience) {
+    document.querySelector(`[data-group="audience"][data-value="${state.audience}"]`)?.classList.add('selected');
+  }
+  if (state.scope) {
+    document.querySelector(`[data-group="scope"][data-value="${state.scope}"]`)?.classList.add('selected');
+  }
+  updateGroups();
+}
+
+function updateGroups() {
+  // Step 1: type is always visible (not conditional)
+  // Step 2: device appears after type is chosen
+  groupDeviceWrap.classList.toggle('visible', !!state.type);
+  // Step 3: audience appears after device is chosen
+  groupAudienceWrap.classList.toggle('visible', !!(state.type && state.device));
+  // Step 4: scope appears only for sites, after audience is chosen
+  groupScopeWrap.classList.toggle('visible', !!(state.type === 'site' && state.device && state.audience));
+  // CTA: all required choices made
+  const ready = state.type && state.device && state.audience && (state.type === 'app' || state.scope);
+  ctaWrap.classList.toggle('visible', !!ready);
+}
+
+btnStart.addEventListener('click', () => showScreen2());
+
+// ===== SCREEN 2 LOGIC =====
+function getOrderedSteps() {
+  // database step goes between deploy and push if active
+  const steps = STEPS_DATA.filter(s => s.id !== 'database');
+  const dbStep = STEPS_DATA.find(s => s.id === 'database');
+  // Insert db before last step (push)
+  const insertIdx = steps.length - 1; // before 'push'
+  steps.splice(insertIdx, 0, dbStep);
+  return steps;
+}
+
+function getRequiredSteps() {
+  const ordered = getOrderedSteps();
+  return ordered.filter(s => !s.optional || state.dbActive);
+}
+
+function getTotalRequired() {
+  return getRequiredSteps().length;
+}
+
+function buildStepList() {
+  const ordered = getOrderedSteps();
+  const requiredIds = getRequiredSteps().map(s => s.id);
+  stepList.innerHTML = '';
+
+  // Find next uncompleted required step
+  const nextActiveId = requiredIds.find(id => !state.completed.includes(id));
+
+  ordered.forEach(step => {
+    const isCompleted = state.completed.includes(step.id);
+    const isOptional = step.optional && !state.dbActive;
+    const isRequired = requiredIds.includes(step.id);
+    const isActive = step.id === nextActiveId;
+    const isLocked = !isCompleted && !isActive && isRequired;
+    const stepTitle = typeof step.title === 'function' ? step.title(state) : step.title;
+
+    const el = document.createElement('div');
+    el.className = 'step-item';
+    if (isCompleted) el.classList.add('completed');
+    else if (isActive) el.classList.add('active');
+    else if (isLocked) el.classList.add('locked');
+    if (isOptional) el.classList.add('locked');
+
+    let badgeHtml = '';
+    if (step.optional && !state.dbActive) {
+      badgeHtml = '<span class="step-badge badge-optional">Optionnel</span>';
+    }
+
+    let activateBtnHtml = '';
+    if (step.optional && !state.dbActive && !isCompleted) {
+      activateBtnHtml = `<button class="opt-activate" data-activate-db><i data-lucide="plus"></i> J'en ai besoin</button>`;
+    }
+
+    const showCheck = isActive || isCompleted;
+
+    el.innerHTML = `
+      <div class="step-icon"><i data-lucide="${isCompleted ? 'check' : step.icon}"></i></div>
+      <div class="step-content">
+        <div class="step-title">${stepTitle}${badgeHtml}</div>
+        ${activateBtnHtml}
+      </div>
+      ${showCheck ? `<button class="step-check" data-check-id="${step.id}"><i data-lucide="check"></i></button>` : ''}
+      <div class="step-chevron"><i data-lucide="chevron-right"></i></div>
+    `;
+
+    if (isActive || isCompleted) {
+      el.addEventListener('click', (e) => {
+        if (e.target.closest('.step-check')) return;
+        if (e.target.closest('.opt-activate')) return;
+        openDrawer(step, isCompleted);
+      });
+    }
+
+    stepList.appendChild(el);
+  });
+
+  // Activate db button
+  stepList.querySelectorAll('[data-activate-db]').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      state.dbActive = true;
+      saveState();
+      buildStepList();
+      updateProgress();
+      lucide.createIcons();
+    });
+  });
+
+  // Quick-check buttons
+  stepList.querySelectorAll('.step-check[data-check-id]').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const id = btn.dataset.checkId;
+      if (!state.completed.includes(id)) {
+        state.completed.push(id);
+        saveState();
+        buildStepList();
+        updateProgress();
+      }
+    });
+  });
+
+  lucide.createIcons();
+}
+
+function updateProgress() {
+  const total = getTotalRequired();
+  const done = state.completed.filter(id => getRequiredSteps().map(s=>s.id).includes(id)).length;
+  const pct = total > 0 ? (done / total) * 100 : 0;
+
+  progressFraction.textContent = `${done} / ${total}`;
+  progressFill.style.width = pct + '%';
+
+  // Status label
+  const idx = Math.min(done, STATUS_LABELS.length - 1);
+  progressStatus.textContent = STATUS_LABELS[idx];
+
+  // Milestones
+  document.getElementById('ms0').classList.toggle('reached', done >= 1);
+  document.getElementById('ms1').classList.toggle('reached', done >= Math.ceil(total / 2));
+  document.getElementById('ms2').classList.toggle('reached', done >= total);
+
+  // Completion
+  completionMsg.classList.toggle('visible', done >= total);
+}
+
+function showScreen1() {
+  screen2.classList.remove('active');
+  screen1.classList.add('active');
+}
+
+function showScreen2() {
+  // Auto-activate db if app + multi
+  if (state.type === 'app' && state.audience === 'multi') {
+    state.dbActive = true;
+  }
+  saveState();
+
+  screen1.classList.remove('active');
+  screen2.classList.add('active');
+  buildStepList();
+  updateProgress();
+}
+
+// Back button with confirmation
+btnBack.addEventListener('click', () => {
+  if (state.completed.length > 0) {
+    modalOverlay.classList.add('open');
+  } else {
+    showScreen1();
+  }
+});
+modalCancel.addEventListener('click', () => modalOverlay.classList.remove('open'));
+modalConfirm.addEventListener('click', () => {
+  modalOverlay.classList.remove('open');
+  showScreen1();
+});
+
+// ===== RESET =====
+btnReset.addEventListener('click', () => {
+  if (state.completed.length > 0) {
+    const ok = confirm('Remettre toute la progression à zéro ?');
+    if (!ok) return;
+  }
+  state = { type: null, device: null, audience: null, scope: null, completed: [], dbActive: false };
+  saveState();
+  document.querySelectorAll('.choice-card').forEach(c => c.classList.remove('selected'));
+  updateGroups();
+  showScreen1();
+});
+
+// ===== DRAWER =====
+function openDrawer(step, readOnly = false) {
+  currentDrawerStepId = step.id;
+  const stepTitle = typeof step.title === 'function' ? step.title(state) : step.title;
+  const stepContent = typeof step.content === 'function' ? step.content(state) : step.content;
+  drawerIcon.innerHTML = `<i data-lucide="${step.icon}"></i>`;
+  drawerTitle.textContent = stepTitle;
+  drawerBody.innerHTML = stepContent;
+  // Hide the "mark as done" button if already completed
+  document.querySelector('.drawer-footer').style.display = readOnly ? 'none' : '';
+  drawerOverlay.classList.add('open');
+  drawer.classList.add('open');
+  lucide.createIcons();
+}
+
+function closeDrawer() {
+  drawerOverlay.classList.remove('open');
+  drawer.classList.remove('open');
+  currentDrawerStepId = null;
+}
+
+drawerOverlay.addEventListener('click', closeDrawer);
+drawerClose.addEventListener('click', closeDrawer);
+
+btnMarkDone.addEventListener('click', () => {
+  if (currentDrawerStepId && !state.completed.includes(currentDrawerStepId)) {
+    state.completed.push(currentDrawerStepId);
+    saveState();
+  }
+  closeDrawer();
+  buildStepList();
+  updateProgress();
+});
+
+// ===== INIT =====
+loadState();
+initScreen1();
+
+// If returning user with choices made, go to screen 2
+if (state.type && state.audience && state.completed.length > 0) {
+  showScreen2();
+}
+
+lucide.createIcons();
+</script>
+
+</body>
+</html>
