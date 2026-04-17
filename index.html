@@ -142,6 +142,9 @@
     .choice-card .card-label {
       font-size: .9rem; font-weight: 500; color: #d4d4d8;
     }
+    .choice-card .card-desc {
+      font-size: .75rem; color: #8b8b9a; margin-top: 4px; line-height: 1.3;
+    }
 
     /* Conditional group (site scope) */
     .group-conditional {
@@ -595,10 +598,12 @@
         <div class="choice-card" data-group="type" data-value="site" tabindex="0">
           <div class="icon-wrap"><i data-lucide="globe"></i></div>
           <div class="card-label">Site web</div>
+          <div class="card-desc">Accessible depuis n'importe quel navigateur, sans installation sur téléphone.</div>
         </div>
         <div class="choice-card" data-group="type" data-value="app" tabindex="0">
           <div class="icon-wrap"><i data-lucide="layout-dashboard"></i></div>
           <div class="card-label">Application</div>
+          <div class="card-desc">Optimisée et installable sur téléphone, comme une vraie app.</div>
         </div>
       </div>
     </div>
@@ -1031,9 +1036,11 @@ function initScreen1() {
       document.querySelectorAll(`[data-group="${group}"]`).forEach(c => c.classList.remove('selected'));
       card.classList.add('selected');
       state[group] = value;
-      // Reset scope when switching to app
-      if (group === 'type' && value === 'app') {
+      // Reset downstream choices when switching type
+      if (group === 'type') {
+        state.device = null;
         state.scope = null;
+        document.querySelectorAll('[data-group="device"]').forEach(c => c.classList.remove('selected'));
         document.querySelectorAll('[data-group="scope"]').forEach(c => c.classList.remove('selected'));
       }
       saveState();
@@ -1065,9 +1072,10 @@ function updateGroups() {
   // Step 1: environment is always visible (always first)
   // Step 2: type appears after environment is chosen
   groupTypeWrap.classList.toggle('visible', !!state.environment);
-  // Step 3: device appears after type is chosen
-  groupDeviceWrap.classList.toggle('visible', !!(state.environment && state.type));
-  // Step 4: audience appears after device is chosen
+  // Step 3: device appears only for sites (apps auto-assigned to mobile)
+  if (state.type === 'app') { state.device = 'mobile'; }
+  groupDeviceWrap.classList.toggle('visible', state.type === 'site');
+  // Step 4: audience appears after device is set
   groupAudienceWrap.classList.toggle('visible', !!(state.environment && state.type && state.device));
   // Step 5: scope appears only for sites, after audience is chosen
   groupScopeWrap.classList.toggle('visible', !!(state.environment && state.type === 'site' && state.device && state.audience));
