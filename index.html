@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Runway — Lance ton projet</title>
+  <title>Runway — Lancement de projet</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
   <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
@@ -343,19 +343,21 @@
       display: flex; align-items: center; justify-content: center;
       transition: all .25s ease;
       padding: 0;
+      color: transparent;
     }
     .step-check:hover {
       border-color: #22c55e;
       background: rgba(34,197,94,.1);
+      color: #22c55e;
     }
-    .step-check i { width: 14px; height: 14px; color: transparent; transition: color .2s; }
-    .step-check:hover i { color: #22c55e; }
+    .step-check svg { width: 14px; height: 14px; stroke: currentColor; }
     .step-item.completed .step-check {
       border-color: #22c55e;
       background: #22c55e;
       pointer-events: none;
+      color: #fff;
     }
-    .step-item.completed .step-check i { color: #fff; }
+    .step-item.completed .step-check svg { stroke: #fff; }
     .step-item.locked .step-check {
       opacity: .3;
       pointer-events: none;
@@ -571,22 +573,38 @@
   <!-- ==================== SCREEN 1 ==================== -->
   <div id="screen1" class="screen active">
     <h1 class="screen-title">Runway</h1>
-    <p class="screen-subtitle">Quelles sont les étapes pour construire mon app ou mon site ?</p>
+    <p class="screen-subtitle">Les étapes pour construire une app ou un site</p>
 
-    <p class="group-label">Que souhaites-tu créer ?</p>
-    <div class="card-group" id="groupType">
-      <div class="choice-card" data-group="type" data-value="site" tabindex="0">
-        <div class="icon-wrap"><i data-lucide="globe"></i></div>
-        <div class="card-label">Un site web</div>
+    <p class="group-label">Utilisation de Claude Code</p>
+    <div class="card-group" id="groupEnv">
+      <div class="choice-card" data-group="environment" data-value="app" tabindex="0">
+        <div class="icon-wrap"><i data-lucide="app-window"></i></div>
+        <div class="card-label">Application Claude Code</div>
+        <div class="card-examples">Sur ordinateur</div>
       </div>
-      <div class="choice-card" data-group="type" data-value="app" tabindex="0">
-        <div class="icon-wrap"><i data-lucide="layout-dashboard"></i></div>
-        <div class="card-label">Une application</div>
+      <div class="choice-card" data-group="environment" data-value="terminal" tabindex="0">
+        <div class="icon-wrap"><i data-lucide="terminal"></i></div>
+        <div class="card-label">Claude Code en terminal</div>
+        <div class="card-examples">Ligne de commande</div>
+      </div>
+    </div>
+
+    <div class="group-conditional" id="groupTypeWrap">
+      <p class="group-label">Type de projet</p>
+      <div class="card-group" id="groupType">
+        <div class="choice-card" data-group="type" data-value="site" tabindex="0">
+          <div class="icon-wrap"><i data-lucide="globe"></i></div>
+          <div class="card-label">Site web</div>
+        </div>
+        <div class="choice-card" data-group="type" data-value="app" tabindex="0">
+          <div class="icon-wrap"><i data-lucide="layout-dashboard"></i></div>
+          <div class="card-label">Application</div>
+        </div>
       </div>
     </div>
 
     <div class="group-conditional" id="groupDeviceWrap">
-      <p class="group-label">Sur quel appareil ?</p>
+      <p class="group-label">Appareil cible</p>
       <div class="card-group three-cols" id="groupDevice">
         <div class="choice-card" data-group="device" data-value="desktop" tabindex="0">
           <div class="icon-wrap"><i data-lucide="monitor"></i></div>
@@ -604,30 +622,30 @@
     </div>
 
     <div class="group-conditional" id="groupAudienceWrap">
-      <p class="group-label">Pour qui ?</p>
+      <p class="group-label">Audience</p>
       <div class="card-group" id="groupAudience">
         <div class="choice-card" data-group="audience" data-value="solo" tabindex="0">
           <div class="icon-wrap"><i data-lucide="user"></i></div>
-          <div class="card-label">Pour moi seul</div>
+          <div class="card-label">Usage personnel</div>
         </div>
         <div class="choice-card" data-group="audience" data-value="multi" tabindex="0">
           <div class="icon-wrap"><i data-lucide="users"></i></div>
-          <div class="card-label">Pour plusieurs personnes</div>
+          <div class="card-label">Plusieurs utilisateurs</div>
         </div>
       </div>
     </div>
 
     <div class="group-conditional" id="groupScopeWrap">
-      <p class="group-label">Quel type de site ?</p>
+      <p class="group-label">Type de site</p>
       <div class="card-group" id="groupScope">
         <div class="choice-card" data-group="scope" data-value="vitrine" tabindex="0">
           <div class="icon-wrap"><i data-lucide="file-text"></i></div>
-          <div class="card-label">Une page vitrine</div>
+          <div class="card-label">Page vitrine</div>
           <div class="card-examples">Portfolio, CV, landing page…</div>
         </div>
         <div class="choice-card" data-group="scope" data-value="complet" tabindex="0">
           <div class="icon-wrap"><i data-lucide="layers"></i></div>
-          <div class="card-label">Un site complet</div>
+          <div class="card-label">Site complet</div>
           <div class="card-examples">Blog, site multi-pages, espace membre…</div>
         </div>
       </div>
@@ -635,7 +653,7 @@
 
     <div class="cta-wrap" id="ctaWrap">
       <button class="btn-primary" id="btnStart">
-        Voir mon parcours <i data-lucide="arrow-right"></i>
+        Voir le parcours <i data-lucide="arrow-right"></i>
       </button>
     </div>
   </div>
@@ -644,7 +662,7 @@
   <div id="screen2" class="screen">
     <div class="screen2-topbar">
       <button class="back-btn" id="btnBack">
-        <i data-lucide="arrow-left"></i> Revenir au choix
+        <i data-lucide="arrow-left"></i> Retour aux choix
       </button>
       <button class="reset-btn" id="btnReset">
         <i data-lucide="rotate-ccw"></i> Recommencer
@@ -655,7 +673,7 @@
     <div class="progress-section">
       <div class="progress-header">
         <span class="progress-fraction" id="progressFraction">0 / 5</span>
-        <span class="progress-status" id="progressStatus">Pret au decollage</span>
+        <span class="progress-status" id="progressStatus">Prêt au décollage</span>
       </div>
       <div class="progress-track">
         <div class="progress-fill" id="progressFill"></div>
@@ -673,7 +691,7 @@
     <!-- Completion -->
     <div class="completion-msg" id="completionMsg">
       <h2>C'est en ligne !</h2>
-      <p>Partage le lien. Pour chaque modification, répète la dernière étape.</p>
+      <p>Le lien peut être partagé. Pour chaque modification future, il suffit de répéter la dernière étape.</p>
     </div>
   </div>
 
@@ -698,8 +716,8 @@
 <!-- ==================== CONFIRM MODAL ==================== -->
 <div class="modal-overlay" id="modalOverlay">
   <div class="modal">
-    <h3>Revenir en arrière ?</h3>
-    <p>Tu as déjà commencé des étapes. Si tu reviens, ta progression sera conservée mais tu pourras changer tes choix.</p>
+    <h3>Retour en arrière ?</h3>
+    <p>Des étapes ont déjà été commencées. La progression sera conservée et les choix restent modifiables.</p>
     <div class="modal-actions">
       <button class="btn-cancel" id="modalCancel">Annuler</button>
       <button class="btn-confirm" id="modalConfirm">Revenir</button>
@@ -714,7 +732,7 @@ const STEPS_DATA = [
   {
     id: 'describe',
     icon: 'pencil',
-    title: 'Décris ton projet à Claude',
+    title: 'Description du projet',
     optional: false,
     content(s) {
       const isApp = s.type === 'app';
@@ -735,9 +753,9 @@ const STEPS_DATA = [
       } else if (isApp) {
         examplePrompt = `"Crée une app de suivi de dépenses perso avec un tableau de bord, des graphiques par catégorie et un bouton pour ajouter une dépense. Design simple. ${deviceHint}"`;
       } else if (isVitrine) {
-        examplePrompt = `"Crée une page portfolio avec mon nom, une courte bio, une grille de projets avec images, et un lien vers mon email. Design minimal et élégant. ${deviceHint} Une seule page HTML."`;
+        examplePrompt = `"Crée une page portfolio avec un nom, une courte bio, une grille de projets avec images, et un lien de contact. Design minimal et élégant. ${deviceHint} Une seule page HTML."`;
       } else if (isMulti) {
-        examplePrompt = `"Crée un site pour mon association avec une page d'accueil, une page membres, un espace actualités et un formulaire de contact. Design chaleureux. ${deviceHint}"`;
+        examplePrompt = `"Crée un site d'association avec une page d'accueil, une page membres, un espace actualités et un formulaire de contact. Design chaleureux. ${deviceHint}"`;
       } else {
         examplePrompt = `"Crée un site personnel avec une page d'accueil, une page à propos et un formulaire de contact. Design sobre et moderne. ${deviceHint}"`;
       }
@@ -745,28 +763,28 @@ const STEPS_DATA = [
       // Device tip
       let deviceTip = '';
       if (isBoth) {
-        deviceTip = `<div class="tip"><strong>Astuce :</strong> Tu veux que ça marche sur ordinateur et téléphone. Précise "responsive" ou "adapté mobile et desktop" dans ta description. Claude créera une interface qui s'ajuste automatiquement à la taille de l'écran.</div>`;
+        deviceTip = `<div class="tip"><strong>Astuce :</strong> Le projet doit fonctionner sur ordinateur et téléphone. Préciser "responsive" ou "adapté mobile et desktop" dans la description. Claude créera une interface qui s'ajuste automatiquement à la taille de l'écran.</div>`;
       } else if (isMobile) {
         deviceTip = isApp
-          ? `<div class="tip"><strong>Astuce :</strong> Pour une app mobile, demande à Claude d'en faire une PWA (Progressive Web App). Tes utilisateurs pourront l'installer sur leur téléphone directement depuis le navigateur — comme une vraie app, sans passer par l'App Store. Ajoute dans ta description : "Fais-en une PWA installable."</div>`
-          : `<div class="tip"><strong>Astuce :</strong> Tu cibles le mobile en priorité. Précise "mobile-first" dans ta description pour que Claude construise l'interface en partant du petit écran. Le résultat sera optimisé pour le téléphone.</div>`;
+          ? `<div class="tip"><strong>Astuce :</strong> Pour une app mobile, demander à Claude d'en faire une PWA (Progressive Web App). Elle s'installe sur le téléphone directement depuis le navigateur — comme une vraie app, sans passer par l'App Store. Ajouter dans la description : "Fais-en une PWA installable."</div>`
+          : `<div class="tip"><strong>Astuce :</strong> Cible mobile en priorité. Préciser "mobile-first" dans la description pour que Claude construise l'interface en partant du petit écran. Le résultat sera optimisé pour le téléphone.</div>`;
       } else if (isDesktop) {
-        deviceTip = `<div class="tip"><strong>Astuce :</strong> Tu cibles l'ordinateur. Tu peux demander une mise en page plus large avec des colonnes, un menu latéral, ou un tableau de bord — des éléments qui profitent d'un grand écran.</div>`;
+        deviceTip = `<div class="tip"><strong>Astuce :</strong> Cible ordinateur. On peut demander une mise en page plus large avec des colonnes, un menu latéral, ou un tableau de bord — des éléments qui profitent d'un grand écran.</div>`;
       }
 
       // PWA tip (app + both or app + mobile)
       const pwaTip = (isApp && (isBoth || isMobile))
-        ? (isMobile ? '' : `<div class="tip"><strong>Astuce :</strong> Demande à Claude d'en faire une PWA (Progressive Web App). Tes utilisateurs pourront installer l'app sur leur téléphone directement depuis le navigateur — pas besoin de passer par l'App Store. Ajoute : "Fais-en une PWA installable."</div>`)
+        ? (isMobile ? '' : `<div class="tip"><strong>Astuce :</strong> Demander à Claude d'en faire une PWA (Progressive Web App). L'installation se fait sur le téléphone directement depuis le navigateur — pas besoin de passer par l'App Store. Ajouter : "Fais-en une PWA installable."</div>`)
         : '';
 
       const multiTip = isMulti
-        ? `<div class="tip"><strong>Astuce :</strong> Ton projet concerne plusieurs personnes. Précise dans ta description si chacun a un compte, un espace perso, ou des rôles différents (admin, membre…). Plus c'est clair, mieux Claude structurera le résultat.</div>`
+        ? `<div class="tip"><strong>Astuce :</strong> Le projet concerne plusieurs personnes. Préciser dans la description si chacun a un compte, un espace perso, ou des rôles différents (admin, membre…). Plus c'est clair, mieux Claude structurera le résultat.</div>`
         : '';
       return `
         <h3>En résumé</h3>
-        <p>Claude Code génère du code à partir de ce que tu lui décris, en français. Pas besoin de savoir coder.</p>
+        <p>Claude Code génère du code à partir d'une description en français. Pas besoin de savoir coder.</p>
         <h3>Concrètement</h3>
-        <p>Ouvre Claude Code et explique ce que tu veux en 3 à 5 phrases : le type de projet, les fonctionnalités principales, le style visuel. Plus c'est précis, meilleur sera le résultat.</p>
+        <p>Ouvrir Claude Code et expliquer le besoin en 3 à 5 phrases : le type de projet, les fonctionnalités principales, le style visuel. Plus c'est précis, meilleur sera le résultat.</p>
         ${deviceTip}
         ${pwaTip}
         ${multiTip}
@@ -778,43 +796,76 @@ const STEPS_DATA = [
   {
     id: 'github',
     icon: 'git-branch',
-    title: 'Crée un espace GitHub',
+    title: 'Espace GitHub',
     optional: false,
     content(s) {
+      const isApp = s.environment === 'app';
       const isMulti = s.audience === 'multi';
       const collabTip = isMulti
-        ? `<div class="tip"><strong>Astuce :</strong> Plus tard, tu pourras inviter d'autres personnes à contribuer au code depuis les paramètres de ton projet GitHub (Settings > Collaborators).</div>`
+        ? `<div class="tip"><strong>Astuce :</strong> Plus tard, d'autres personnes peuvent être invitées à contribuer au code depuis les paramètres du projet GitHub (Settings > Collaborators).</div>`
+        : '';
+      const appTip = isApp
+        ? `<div class="tip"><strong>Important :</strong> En mode application Claude Code, ce dépôt doit être créé <strong>avant</strong> de démarrer le projet, car il sera lié à l'étape suivante.</div>`
         : '';
       return `
         <h3>En résumé</h3>
-        <p>GitHub, c'est l'endroit où ton code est sauvegardé en ligne. C'est aussi ce qui permettra de mettre ton projet en ligne à l'étape suivante.</p>
+        <p>GitHub, c'est l'endroit où le code est sauvegardé en ligne. C'est aussi ce qui permettra la mise en ligne du projet plus tard.</p>
+        ${appTip}
         <h3>Concrètement</h3>
-        <p>Va sur github.com et crée un compte gratuit. Ensuite, clique sur "New repository" (= nouveau projet), donne-lui un nom, laisse-le en Public, et valide.</p>
+        <p>Aller sur github.com et créer un compte gratuit. Ensuite, cliquer sur "New repository" (= nouveau projet), lui donner un nom, le laisser en Public, et valider.</p>
         <h3>Pourquoi c'est utile</h3>
-        <p>GitHub garde un historique de chaque modification. Si quelque chose casse, tu peux revenir en arrière.</p>
+        <p>GitHub garde un historique de chaque modification. En cas de casse, un retour en arrière reste possible.</p>
         ${collabTip}
+      `;
+    }
+  },
+  {
+    id: 'folder',
+    icon: 'folder-git-2',
+    title: 'Dossier local et liaison à Claude Code',
+    optional: false,
+    envOnly: 'app',
+    content(s) {
+      return `
+        <h3>En résumé</h3>
+        <p>L'application Claude Code travaille dans un dossier sur l'ordinateur. Il faut créer ce dossier, l'ouvrir dans Claude Code, puis le connecter au dépôt GitHub.</p>
+        <h3>Concrètement</h3>
+        <p>1. Créer un nouveau dossier vide sur l'ordinateur (par exemple <em>mon-projet</em>), à l'endroit voulu (Documents, Bureau…).</p>
+        <p>2. Ouvrir l'application Claude Code, cliquer sur <strong>"Add project"</strong> (ou "Ouvrir un projet"), puis sélectionner ce dossier.</p>
+        <p>3. Dans Claude Code, demander simplement : <em>"Connecte ce dossier à mon dépôt GitHub [adresse-du-projet]."</em> Claude s'occupera des commandes <code>git init</code>, <code>git remote add</code>, etc.</p>
+        <div class="tip"><strong>Rappel :</strong> Le dépôt GitHub doit déjà être créé (étape précédente). Sans ça, la connexion ne peut pas se faire.</div>
       `;
     }
   },
   {
     id: 'connect',
     icon: 'link',
-    title: 'Envoie le code sur GitHub',
+    title: 'Envoi du code sur GitHub',
     optional: false,
-    content() {
+    content(s) {
+      const isApp = s.environment === 'app';
+      if (isApp) {
+        return `
+          <h3>En résumé</h3>
+          <p>Le dossier est déjà relié à GitHub. Il ne reste qu'à envoyer le code que Claude vient de générer.</p>
+          <h3>Concrètement</h3>
+          <p>Dans l'application Claude Code, demander simplement : <em>"Envoie le code sur GitHub avec un premier commit."</em> Claude exécutera <code>git add</code>, <code>git commit</code> et <code>git push</code>.</p>
+          <div class="tip"><strong>Astuce :</strong> Si l'application affiche un bouton "Push" ou "Sync" dans sa barre latérale, un clic dessus produit le même effet.</div>
+        `;
+      }
       return `
         <h3>En résumé</h3>
-        <p>Le code que Claude a créé est sur ton ordinateur. Il faut maintenant l'envoyer sur GitHub pour pouvoir le mettre en ligne.</p>
+        <p>Le code généré par Claude se trouve sur l'ordinateur. Il faut maintenant l'envoyer sur GitHub pour permettre la mise en ligne.</p>
         <h3>Concrètement</h3>
-        <p>Tu peux simplement demander à Claude : "Envoie le code sur mon dépôt GitHub" en lui donnant l'adresse de ton projet. Il s'occupera des commandes.</p>
-        <h3>Si tu préfères le faire toi-même</h3>
-        <p>Ouvre un terminal dans le dossier de ton projet et tape :</p>
+        <p>Le plus simple : demander à Claude "Envoie le code sur mon dépôt GitHub" en lui donnant l'adresse du projet. Il s'occupera des commandes.</p>
+        <h3>Option manuelle</h3>
+        <p>Ouvrir un terminal dans le dossier du projet et taper :</p>
         <code>git init
 git add .
 git commit -m "premier envoi"
-git remote add origin ADRESSE_DE_TON_PROJET
+git remote add origin ADRESSE_DU_PROJET
 git push -u origin main</code>
-        <p>L'adresse de ton projet se trouve sur la page GitHub que tu viens de créer.</p>
+        <p>L'adresse du projet se trouve sur la page GitHub créée à l'étape précédente.</p>
       `;
     }
   },
@@ -822,83 +873,88 @@ git push -u origin main</code>
     id: 'deploy',
     icon: 'zap',
     title(s) {
-      if (s.type === 'app') return 'Mets en ligne avec Vercel';
-      return s.scope === 'vitrine' ? 'Mets en ligne avec GitHub Pages' : 'Mets en ligne avec Netlify';
+      if (s.type === 'app') return 'Mise en ligne avec Vercel';
+      return s.scope === 'vitrine' ? 'Mise en ligne avec GitHub Pages' : 'Mise en ligne avec Netlify';
     },
     optional: false,
     content(s) {
       if (s.type === 'app') {
         return `
           <h3>En résumé</h3>
-          <p>Vercel va lire ton code sur GitHub et le mettre en ligne automatiquement. À chaque future modification, la mise à jour se fera toute seule.</p>
+          <p>Vercel lit le code sur GitHub et le met en ligne automatiquement. À chaque future modification, la mise à jour se fera toute seule.</p>
           <h3>Pourquoi Vercel</h3>
           <p>Pour une application, Vercel gère bien les parties dynamiques (comptes, données en temps réel, etc.).</p>
-          <div class="tip"><strong>Astuce PWA :</strong> Si tu as demandé une PWA à l'étape 1, Vercel la servira automatiquement. Rien de plus à configurer.</div>
+          <div class="tip"><strong>Astuce PWA :</strong> Une PWA demandée à l'étape 1 sera servie automatiquement par Vercel. Rien de plus à configurer.</div>
           <h3>Concrètement</h3>
-          <p>Va sur vercel.com, connecte-toi avec ton compte GitHub, clique sur "Add New Project", choisis ton projet, puis clique sur "Deploy". C'est tout — ton app a maintenant une adresse web publique.</p>
+          <p>Aller sur vercel.com, se connecter avec le compte GitHub, cliquer sur "Add New Project", sélectionner le projet, puis cliquer sur "Deploy". C'est tout — l'app a maintenant une adresse web publique.</p>
         `;
       }
       if (s.scope === 'vitrine') {
         return `
           <h3>En résumé</h3>
-          <p>GitHub Pages permet de mettre en ligne une page directement depuis ton projet GitHub. Pas besoin de créer de compte ailleurs — c'est gratuit et inclus dans GitHub.</p>
+          <p>GitHub Pages permet la mise en ligne d'une page directement depuis le projet GitHub. Pas besoin de créer de compte ailleurs — c'est gratuit et inclus dans GitHub.</p>
           <h3>Pourquoi GitHub Pages</h3>
           <p>Pour une page vitrine (portfolio, CV, landing page), c'est la solution la plus simple : pas de configuration, pas de service externe. Le site est en ligne en quelques clics.</p>
           <h3>Concrètement</h3>
-          <p>Dans ton projet GitHub, va dans Settings > Pages. Sous "Source", choisis la branche <em>main</em> et le dossier <em>/ (root)</em>, puis clique sur "Save". Après quelques secondes, ton site sera accessible à l'adresse <em>ton-pseudo.github.io/nom-du-projet</em>.</p>
-          <div class="tip"><strong>Astuce :</strong> Vérifie que ton fichier principal s'appelle bien <em>index.html</em>. C'est la page que GitHub Pages affichera par défaut.</div>
+          <p>Dans le projet GitHub, aller dans Settings > Pages. Sous "Source", choisir la branche <em>main</em> et le dossier <em>/ (root)</em>, puis cliquer sur "Save". Après quelques secondes, le site sera accessible à l'adresse <em>pseudo.github.io/nom-du-projet</em>.</p>
+          <div class="tip"><strong>Astuce :</strong> Vérifier que le fichier principal s'appelle bien <em>index.html</em>. C'est la page que GitHub Pages affichera par défaut.</div>
         `;
       }
       return `
         <h3>En résumé</h3>
-        <p>Netlify va lire ton code sur GitHub et le mettre en ligne automatiquement. À chaque future modification, la mise à jour se fera toute seule.</p>
+        <p>Netlify lit le code sur GitHub et le met en ligne automatiquement. À chaque future modification, la mise à jour se fera toute seule.</p>
         <h3>Pourquoi Netlify</h3>
         <p>Pour un site avec plusieurs pages, un blog ou un espace membre, Netlify est le plus adapté : hébergement, sécurité (HTTPS), et même gestion des formulaires de contact — tout est inclus.</p>
-        <div class="tip"><strong>Astuce formulaire :</strong> Si ton site a un formulaire de contact, ajoute l'attribut <em>netlify</em> à ta balise &lt;form&gt; et les messages arriveront directement dans ton tableau de bord Netlify. Pas besoin de serveur.</div>
+        <div class="tip"><strong>Astuce formulaire :</strong> Pour un formulaire de contact, ajouter l'attribut <em>netlify</em> à la balise &lt;form&gt; et les messages arriveront directement dans le tableau de bord Netlify. Pas besoin de serveur.</div>
         <h3>Concrètement</h3>
-        <p>Va sur netlify.com, connecte-toi avec ton compte GitHub, clique sur "Add new site" > "Import an existing project", choisis ton projet, puis clique sur "Deploy site". Ton site a maintenant une adresse web publique.</p>
+        <p>Aller sur netlify.com, se connecter avec le compte GitHub, cliquer sur "Add new site" > "Import an existing project", sélectionner le projet, puis cliquer sur "Deploy site". Le site a maintenant une adresse web publique.</p>
       `;
     }
   },
   {
     id: 'database',
     icon: 'database',
-    title: 'Ajoute une base de données',
+    title: 'Base de données',
     optional: true,
     content(s) {
       const isMulti = s.audience === 'multi';
       const multiTip = isMulti
-        ? `<div class="tip"><strong>Astuce multi-utilisateurs :</strong> Supabase inclut un système de comptes (inscription, connexion, mot de passe oublié) prêt à l'emploi. Demande à Claude : "Ajoute l'authentification Supabase avec un espace perso par utilisateur." Il s'occupera de tout câbler.</div>`
+        ? `<div class="tip"><strong>Astuce multi-utilisateurs :</strong> Supabase inclut un système de comptes (inscription, connexion, mot de passe oublié) prêt à l'emploi. Demander à Claude : "Ajoute l'authentification Supabase avec un espace perso par utilisateur." Il s'occupera du câblage.</div>`
         : '';
       return `
         <h3>En résumé</h3>
-        <p>Une base de données sert à stocker des informations qui changent : comptes, messages, commandes, préférences… Si ton projet affiche toujours la même chose, tu n'en as pas besoin.</p>
+        <p>Une base de données sert à stocker des informations qui changent : comptes, messages, commandes, préférences… Un projet qui affiche toujours la même chose n'en a pas besoin.</p>
         <h3>Quand c'est nécessaire</h3>
-        <p>Dès que ton projet doit retenir quelque chose : des comptes utilisateurs, des données personnalisées, du contenu qui évolue.</p>
+        <p>Dès que le projet doit retenir quelque chose : des comptes utilisateurs, des données personnalisées, du contenu qui évolue.</p>
         ${multiTip}
         <h3>Comment faire</h3>
-        <p>Crée un compte gratuit sur supabase.com, puis crée un nouveau projet. Ensuite, demande à Claude : "Connecte mon projet à Supabase" en lui donnant les clés d'API (visibles dans les paramètres Supabase). Il fera le reste.</p>
+        <p>Créer un compte gratuit sur supabase.com, puis un nouveau projet. Ensuite, demander à Claude : "Connecte mon projet à Supabase" en lui donnant les clés d'API (visibles dans les paramètres Supabase). Il fera le reste.</p>
       `;
     }
   },
   {
     id: 'push',
     icon: 'arrow-right',
-    title: 'Envoie tes modifications',
+    title: 'Envoi des modifications',
     optional: false,
     content(s) {
+      const isApp = s.environment === 'app';
       let platform, thing;
-      if (s.type === 'app') { platform = 'Vercel'; thing = 'ton application'; }
-      else if (s.scope === 'vitrine') { platform = 'GitHub Pages'; thing = 'ta page'; }
-      else { platform = 'Netlify'; thing = 'ton site'; }
+      if (s.type === 'app') { platform = 'Vercel'; thing = "l'application"; }
+      else if (s.scope === 'vitrine') { platform = 'GitHub Pages'; thing = 'la page'; }
+      else { platform = 'Netlify'; thing = 'le site'; }
+      const appBtnTip = isApp
+        ? `<div class="tip"><strong>Raccourci :</strong> Dans l'application Claude Code, un clic sur "Push" ou "Sync" dans la barre latérale produit le même effet.</div>`
+        : '';
       return `
         <h3>En résumé</h3>
-        <p>À chaque fois que tu modifies ton projet, il faut renvoyer le code sur GitHub. ${platform} détectera le changement et mettra ${thing} à jour automatiquement.</p>
+        <p>À chaque modification du projet, il faut renvoyer le code sur GitHub. ${platform} détectera le changement et mettra ${thing} à jour automatiquement.</p>
         <h3>Le plus simple</h3>
-        <p>Demande à Claude : "Envoie les modifications sur GitHub." Il exécutera les commandes pour toi.</p>
-        <h3>Si tu préfères le faire toi-même</h3>
+        <p>Demander à Claude : "Envoie les modifications sur GitHub." Il exécutera les commandes.</p>
+        ${appBtnTip}
+        <h3>Option manuelle</h3>
         <code>git add .
-git commit -m "ce que tu as changé"
+git commit -m "description de la modification"
 git push</code>
         <p>Quelques secondes après, ${thing} en ligne est à jour.</p>
       `;
@@ -909,7 +965,7 @@ git push</code>
 const STATUS_LABELS = [
   'Prêt au décollage',
   "C'est parti !",
-  'Tu avances bien',
+  'Ça avance bien',
   'À mi-chemin',
   'Presque là',
   'En ligne !'
@@ -917,6 +973,7 @@ const STATUS_LABELS = [
 
 // ===== STATE =====
 let state = {
+  environment: null, // 'app' | 'terminal'
   type: null,       // 'site' | 'app'
   device: null,     // 'desktop' | 'mobile' | 'both'
   audience: null,   // 'solo' | 'multi'
@@ -958,6 +1015,7 @@ const modalOverlay = document.getElementById('modalOverlay');
 const modalCancel = document.getElementById('modalCancel');
 const modalConfirm = document.getElementById('modalConfirm');
 const btnReset = document.getElementById('btnReset');
+const groupTypeWrap = document.getElementById('groupTypeWrap');
 const groupDeviceWrap = document.getElementById('groupDeviceWrap');
 const groupAudienceWrap = document.getElementById('groupAudienceWrap');
 const groupScopeWrap = document.getElementById('groupScopeWrap');
@@ -985,6 +1043,9 @@ function initScreen1() {
   });
 
   // Restore selections
+  if (state.environment) {
+    document.querySelector(`[data-group="environment"][data-value="${state.environment}"]`)?.classList.add('selected');
+  }
   if (state.type) {
     document.querySelector(`[data-group="type"][data-value="${state.type}"]`)?.classList.add('selected');
   }
@@ -1001,15 +1062,17 @@ function initScreen1() {
 }
 
 function updateGroups() {
-  // Step 1: type is always visible (not conditional)
-  // Step 2: device appears after type is chosen
-  groupDeviceWrap.classList.toggle('visible', !!state.type);
-  // Step 3: audience appears after device is chosen
-  groupAudienceWrap.classList.toggle('visible', !!(state.type && state.device));
-  // Step 4: scope appears only for sites, after audience is chosen
-  groupScopeWrap.classList.toggle('visible', !!(state.type === 'site' && state.device && state.audience));
+  // Step 1: environment is always visible (always first)
+  // Step 2: type appears after environment is chosen
+  groupTypeWrap.classList.toggle('visible', !!state.environment);
+  // Step 3: device appears after type is chosen
+  groupDeviceWrap.classList.toggle('visible', !!(state.environment && state.type));
+  // Step 4: audience appears after device is chosen
+  groupAudienceWrap.classList.toggle('visible', !!(state.environment && state.type && state.device));
+  // Step 5: scope appears only for sites, after audience is chosen
+  groupScopeWrap.classList.toggle('visible', !!(state.environment && state.type === 'site' && state.device && state.audience));
   // CTA: all required choices made
-  const ready = state.type && state.device && state.audience && (state.type === 'app' || state.scope);
+  const ready = state.environment && state.type && state.device && state.audience && (state.type === 'app' || state.scope);
   ctaWrap.classList.toggle('visible', !!ready);
 }
 
@@ -1017,13 +1080,14 @@ btnStart.addEventListener('click', () => showScreen2());
 
 // ===== SCREEN 2 LOGIC =====
 function getOrderedSteps() {
-  // database step goes between deploy and push if active
-  const steps = STEPS_DATA.filter(s => s.id !== 'database');
-  const dbStep = STEPS_DATA.find(s => s.id === 'database');
-  // Insert db before last step (push)
-  const insertIdx = steps.length - 1; // before 'push'
-  steps.splice(insertIdx, 0, dbStep);
-  return steps;
+  const isApp = state.environment === 'app';
+  const byId = Object.fromEntries(STEPS_DATA.map(s => [s.id, s]));
+  // App flow: GitHub d'abord (prérequis), puis dossier lié, puis on décrit, puis push initial, deploy, db, push.
+  // Terminal flow: on décrit, puis GitHub, puis push initial, deploy, db, push.
+  const order = isApp
+    ? ['github', 'folder', 'describe', 'connect', 'deploy', 'database', 'push']
+    : ['describe', 'github', 'connect', 'deploy', 'database', 'push'];
+  return order.map(id => byId[id]).filter(Boolean);
 }
 
 function getRequiredSteps() {
@@ -1065,7 +1129,7 @@ function buildStepList() {
 
     let activateBtnHtml = '';
     if (step.optional && !state.dbActive && !isCompleted) {
-      activateBtnHtml = `<button class="opt-activate" data-activate-db><i data-lucide="plus"></i> J'en ai besoin</button>`;
+      activateBtnHtml = `<button class="opt-activate" data-activate-db><i data-lucide="plus"></i> Activer cette étape</button>`;
     }
 
     const showCheck = isActive || isCompleted;
@@ -1179,7 +1243,7 @@ btnReset.addEventListener('click', () => {
     const ok = confirm('Remettre toute la progression à zéro ?');
     if (!ok) return;
   }
-  state = { type: null, device: null, audience: null, scope: null, completed: [], dbActive: false };
+  state = { environment: null, type: null, device: null, audience: null, scope: null, completed: [], dbActive: false };
   saveState();
   document.querySelectorAll('.choice-card').forEach(c => c.classList.remove('selected'));
   updateGroups();
@@ -1225,7 +1289,7 @@ loadState();
 initScreen1();
 
 // If returning user with choices made, go to screen 2
-if (state.type && state.audience && state.completed.length > 0) {
+if (state.environment && state.type && state.audience && state.completed.length > 0) {
   showScreen2();
 }
 
